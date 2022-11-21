@@ -14,7 +14,7 @@ from dnd.dice import CriticalStatus
 logger = logging.getLogger(__name__)
 
 
-def select_target(opponents: List[Character]) -> Optional[int]:
+def select_target_index(opponents: List[Character]) -> Optional[int]:
     target = None
     lowest_hp = 10000000
     for i, c in enumerate(opponents):
@@ -23,7 +23,10 @@ def select_target(opponents: List[Character]) -> Optional[int]:
     return target
 
 
-def compute_initiative(team1: List[Character], team2: List[Character]) -> List[Character]:
+def compute_initiative(
+    team1: List[Character],
+    team2: List[Character],
+) -> List[Tuple[float, Character, int]]:
     order = []
     for c in team1:
         # append a small random value to use as a tiebreaker
@@ -65,7 +68,15 @@ def fight(team1: List[Character], team2: List[Character], attack) -> Tuple[int, 
         rounds += 1
         for (_, c, team) in order:
             opponents = team1 if team == 2 else team2
-            target = opponents[select_target(opponents)]
+            if all([c.hp <= 0 for c in opponents]):
+                return (rounds, team)
+            
+            target_ind = select_target_index(opponents)
+            if target_ind is not None:
+                target = opponents[target_ind]
+            else:
+                continue
+
             hit, crit = attack(c, target)
             dmg = 0
             if crit == CriticalStatus.Fail:
@@ -79,9 +90,5 @@ def fight(team1: List[Character], team2: List[Character], attack) -> Tuple[int, 
             target.hp -= dmg
             logger.info(f'{target.name} has {target.hp} hp remaining')
 
-            if all([c.hp <= 0 for c in team1]):
-                return (rounds, 2)
-            if all([c.hp <= 0 for c in team2]):
-                return (rounds, 1)
 
         logger.info('-----')

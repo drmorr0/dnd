@@ -14,10 +14,10 @@ class Character:
         self.attack_bonus = attack.get('bonus')
 
         m = re.match('(\d+)d(\d+)((\+|-)\d+)', attack.get('dmg'))
-
-        self.dmg_numd = int(m.group(1))
-        self.dmg_sized = int(m.group(2))
-        self.dmg_mod = int(m.group(3))
+        if m is not None:
+            self.dmg_numd = int(m.group(1))
+            self.dmg_sized = int(m.group(2))
+            self.dmg_mod = int(m.group(3))
         self.ac = attrs.get('ac')
         self.hp = attrs.get('hp')
         self.max_hp = attrs.get('hp')
