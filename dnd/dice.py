@@ -1,5 +1,5 @@
-import secrets
 import logging
+import random
 from enum import Enum
 from typing import Mapping
 from typing import List
@@ -16,7 +16,7 @@ class CriticalStatus(Enum):
 
 
 def roll(num: int, sides: int) -> List[int]:
-    rolls = [secrets.randbelow(sides) + 1 for i in range(num)]
+    rolls = [random.randint(1, sides) for i in range(num)]
     logger.debug(rolls)
     return rolls
 
