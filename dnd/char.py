@@ -57,7 +57,8 @@ class Character:
                 if target is not None:
                     return target, Action.Heal
             elif self.special['type'] == 'stun':
-                if random.random() < 0.25:  # Can only use specials 1-in-4 times
+                # Can only use specials 1-in-4 times, and only if we haven't stunned something else
+                if not self.stunned_target and random.random() < 0.25:
                     return (
                         random.choice([o for o in opponents if o.state != State.Dead]),
                         Action.Stun,

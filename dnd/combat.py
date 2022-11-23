@@ -60,7 +60,7 @@ def pool_attack(c, target) -> Tuple[bool, CriticalStatus]:
     modified_ac = target.ac - 10
     logger.info(
         f'{c.name} attacks {target.name}: {attack_roll} versus {modified_ac} AC '
-        '(pool size = {pool_size})',
+        f'(pool size = {pool_size})',
     )
     return (attack_roll >= modified_ac, crit)
 
@@ -78,11 +78,13 @@ def fight(team1: List[Character], team2: List[Character], attack) -> Tuple[int, 
 
             if c.state == State.Stunned:
                 continue
-            stunned_target = c.stunned_target
 
             allies, opponents = (team2, team1) if team == 2 else (team1, team2)
-
             target, action = c.select_target(allies, opponents)
+            # make sure this happens _after_ select_target so we don't re-stun
+            stunned_target = c.stunned_target
+            c.stunned_target = None
+
             if target is not None:
                 if action == Action.Attack:
                     hit, crit = attack(c, target)
@@ -104,6 +106,7 @@ def fight(team1: List[Character], team2: List[Character], attack) -> Tuple[int, 
                     c.stunned_target = target
                     target.state = State.Stunned
 
-            if stunned_target:
+            if stunned_target is not None and stunned_target != c.stunned_target:
                 stunned_target.state = State.Alive if stunned_target.hp > 0 else State.Dead
+
         logger.info('-----')
