@@ -1,0 +1,11 @@
+---
+- name: Eve
+  initiative: 4
+  attack:
+    num: 1
+    bonus: 6
+    dmg: 1d6+4
+  special:
+    type: stun
+  hp: 20
+  ac: 17

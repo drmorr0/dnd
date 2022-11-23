@@ -1,20 +1,10 @@
 import mock
 import pytest
 
+from dnd.char import Action
 from dnd.char import Character
+from dnd.char import State
 from dnd.dice import CriticalStatus
-
-
-@pytest.fixture
-def char():
-    return Character({
-        'name': 'Johnny McFighter',
-        'hp': 10,
-        'max_hp': 10,
-        'attack': {
-            'dmg': '1d6+3',
-        },
-    })
 
 
 @pytest.fixture
@@ -34,17 +24,19 @@ def opponents():
 
 
 def test_select_target_empty(char):
-    assert char.select_target([], []) is None
+    assert char.select_target([], []) == (None, Action.Attack)
 
 
 def test_select_target_all_dead(char, opponents):
-    opponents[0].hp = -1
-    opponents[1].hp = -1
-    assert char.select_target([], opponents) is None
+    opponents[0].state = State.Dead
+    opponents[1].state = State.Dead
+    assert char.select_target([], opponents) == (None, Action.Attack)
 
 
 def test_select_target(char, opponents):
-    assert char.select_target([], opponents).name == 'Hurty Face'
+    o, a = char.select_target([], opponents)
+    assert o.name == 'Hurty Face'
+    assert a == Action.Attack
 
 
 @pytest.mark.parametrize('hit,crit,dmg', [

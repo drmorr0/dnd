@@ -3,7 +3,9 @@ import logging
 import sys
 
 from dnd.char import read_characters
-from dnd.sims.ac import run_ac_sim
+from dnd.sims import run_ac_sim
+from dnd.sims import run_single_d20
+from dnd.sims import run_single_pool
 
 NUM_TRIALS = 10000
 
@@ -12,8 +14,13 @@ def main(args: argparse.Namespace) -> None:
     team1 = read_characters(args.team1)
     team2 = read_characters(args.team2)
 
-    results = run_ac_sim(team1, team2, args.iterations, args.output_dir)
-    print(results)
+    if args.sim == 'ac':
+        results = run_ac_sim(team1, team2, args.iterations, args.output_dir)
+        print(results)
+    if args.sim == 'single-d20':
+        run_single_d20(team1, team2)
+    if args.sim == 'single-pool':
+        run_single_pool(team1, team2)
 
 
 def parse_args(description: str) -> argparse.Namespace:
@@ -34,6 +41,11 @@ def parse_args(description: str) -> argparse.Namespace:
     parser.add_argument(
         '--output-dir',
         default='./output',
+    )
+    parser.add_argument(
+        '--sim',
+        default='single-d20',
+        choices=['ac', 'single-d20', 'single-pool'],
     )
     parser.add_argument('team1')
     parser.add_argument('team2')

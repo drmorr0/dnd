@@ -1,7 +1,6 @@
 import logging
 import random
 from enum import Enum
-from typing import Mapping
 from typing import List
 from typing import Tuple
 
@@ -25,25 +24,26 @@ def roll_plus_mod(num: int, sides: int, mod: int) -> int:
     return sum(roll(num, sides)) + mod
 
 
-def roll_plus_mod_crit(sides: int, mod: int) -> Tuple[int, CriticalStatus]:
-    nat_roll = roll(1, sides)[0]
+def roll_plus_mod_crit(num_dice: int, sides: int, mod: int) -> Tuple[int, CriticalStatus]:
+    nat_roll = max(roll(num_dice, sides))
     crit = (
-        CriticalStatus.Success 
-        if (nat_roll == sides) 
+        CriticalStatus.Success
+        if (nat_roll == sides)
         else (
-            CriticalStatus.Fail 
-            if (nat_roll == 1) 
+            CriticalStatus.Fail
+            if (nat_roll == 1)
             else CriticalStatus.Empty
         )
     )
     return nat_roll + mod, crit
 
 
-def d20(mod: int, can_crit: bool = False) -> Tuple[int, CriticalStatus]:
+def d20(mod: int, can_crit: bool = False, advantage: bool = False) -> Tuple[int, CriticalStatus]:
+    num_dice = 2 if advantage else 1
     if can_crit:
-        return roll_plus_mod_crit(20, mod)
+        return roll_plus_mod_crit(num_dice, 20, mod)
     else:
-        return roll_plus_mod(1, 20, mod), CriticalStatus.Empty
+        return roll_plus_mod(num_dice, 20, mod), CriticalStatus.Empty
 
 
 def d6_pool(num: int, can_crit: bool = False) -> Tuple[int, CriticalStatus]:

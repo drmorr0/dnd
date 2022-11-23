@@ -4,7 +4,9 @@ from operator import itemgetter
 from typing import List
 from typing import Tuple
 
+from dnd.char import Action
 from dnd.char import Character
+from dnd.char import State
 from dnd.dice import CriticalStatus
 from dnd.dice import d20
 from dnd.dice import d6_pool
@@ -38,15 +40,28 @@ def compute_initiative(
 
 
 def d20_attack(c, target) -> Tuple[bool, CriticalStatus]:
-    attack_roll, crit = d20(c.attack_bonus, can_crit=True)
-    logger.info(f'{c.name} attacks {target.name} with a {attack_roll} versus {target.ac} AC')
+    advantage = (target.state == State.Stunned)
+    attack_roll, crit = d20(c.attack_bonus, can_crit=True, advantage=advantage)
+    if advantage:
+        logger.info(
+            f'{c.name} attacks {target.name} with advantage: {attack_roll} versus {target.ac} AC',
+        )
+    else:
+        logger.info(
+            f'{c.name} attacks {target.name}: {attack_roll} versus {target.ac} AC',
+        )
     return (attack_roll >= target.ac, crit)
 
 
 def pool_attack(c, target) -> Tuple[bool, CriticalStatus]:
-    attack_roll, crit = d6_pool(5 + c.attack_bonus, can_crit=True)
+    base = 6 if target.state == State.Stunned else 5
+    pool_size = base + c.attack_bonus
+    attack_roll, crit = d6_pool(pool_size, can_crit=True)
     modified_ac = target.ac - 10
-    logger.info(f'{c.name} attacks {target.name} with a {attack_roll} versus {modified_ac} AC')
+    logger.info(
+        f'{c.name} attacks {target.name}: {attack_roll} versus {modified_ac} AC '
+        '(pool size = {pool_size})',
+    )
     return (attack_roll >= modified_ac, crit)
 
 
@@ -56,18 +71,39 @@ def fight(team1: List[Character], team2: List[Character], attack) -> Tuple[int, 
     while True:
         rounds += 1
         for (_, c, team) in order:
-            if all([c.hp <= 0 for c in team1]):
+            if all([c.state == State.Dead for c in team1]):
                 return (rounds, 2)
-            if all([c.hp <= 0 for c in team2]):
+            if all([c.state == State.Dead for c in team2]):
                 return (rounds, 1)
+
+            if c.state == State.Stunned:
+                continue
+            stunned_target = c.stunned_target
+
             allies, opponents = (team2, team1) if team == 2 else (team1, team2)
 
-            target = c.select_target(allies, opponents)
+            target, action = c.select_target(allies, opponents)
             if target is not None:
-                hit, crit = attack(c, target)
-                target.hp -= c.compute_damage(hit, crit)
-                logger.info(f'{target.name} has {target.hp} hp remaining')
-            else:
-                continue
+                if action == Action.Attack:
+                    hit, crit = attack(c, target)
+                    dmg = c.compute_damage(hit, crit)
+                    target.apply_dmg(dmg)
+                    if dmg > 0:
+                        logger.info(
+                            f'{c.name} hits and deals {dmg} points of damage to {target.name}!'
+                        )
+                        logger.info(f'{target.name} has {target.hp} hp remaining')
+                elif action == Action.Heal:
+                    dmg = c.compute_special_damage()
+                    healing = min(dmg, target.max_hp - target.hp)
+                    target.hp += healing
+                    logger.info(f'{c.name} heals {healing} points of damage to {target.name}!')
+                    logger.info(f'{target.name} has {target.hp} hp remaining')
+                elif action == Action.Stun:
+                    logger.info(f'{c.name} stuns {target.name}')
+                    c.stunned_target = target
+                    target.state = State.Stunned
 
+            if stunned_target:
+                stunned_target.state = State.Alive if stunned_target.hp > 0 else State.Dead
         logger.info('-----')

@@ -26,7 +26,7 @@ def test_roll_plus_mod():
 ])
 def test_roll_plus_mod_crit(roll_value, status):
     with mock.patch('dnd.dice.random.randint', return_value=roll_value):
-        assert roll_plus_mod_crit(20, 3) == (roll_value + 3, status)
+        assert roll_plus_mod_crit(1, 20, 3) == (roll_value + 3, status)
 
 
 @pytest.mark.parametrize('roll_value,status', [
