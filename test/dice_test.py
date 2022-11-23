@@ -1,12 +1,12 @@
 import mock
 import pytest
 
+from dnd.dice import CriticalStatus
 from dnd.dice import d6_pool
+from dnd.dice import HIT_MAP
 from dnd.dice import roll
 from dnd.dice import roll_plus_mod
 from dnd.dice import roll_plus_mod_crit
-from dnd.dice import CriticalStatus
-from dnd.dice import HIT_MAP
 
 
 @pytest.mark.parametrize('num', [0, -1])
@@ -15,8 +15,8 @@ def test_roll_empty(num):
 
 
 def test_roll_plus_mod():
-    with mock.patch('dnd.dice.secrets.randbelow', side_effect=[7, 8]):
-        assert roll_plus_mod(2, 20, 3) == 20
+    with mock.patch('dnd.dice.random.randint', side_effect=[7, 8]):
+        assert roll_plus_mod(2, 20, 3) == 18
 
 
 @pytest.mark.parametrize('roll_value,status', [
@@ -25,7 +25,7 @@ def test_roll_plus_mod():
     (5, CriticalStatus.Empty),
 ])
 def test_roll_plus_mod_crit(roll_value, status):
-    with mock.patch('dnd.dice.secrets.randbelow', return_value=roll_value-1):
+    with mock.patch('dnd.dice.random.randint', return_value=roll_value):
         assert roll_plus_mod_crit(20, 3) == (roll_value + 3, status)
 
 
@@ -36,7 +36,7 @@ def test_roll_plus_mod_crit(roll_value, status):
     (1, CriticalStatus.Fail),
 ])
 def test_d6_pool_one_die(roll_value, status):
-    with mock.patch('dnd.dice.secrets.randbelow', return_value=roll_value-1):
+    with mock.patch('dnd.dice.random.randint', return_value=roll_value):
         assert d6_pool(1, True) == (HIT_MAP[roll_value], status)
 
 
@@ -50,7 +50,7 @@ def test_d6_pool_one_die(roll_value, status):
     (1, 1, CriticalStatus.Fail),
 ])
 def test_d6_pool_two_dice(c1, c2, status):
-    with mock.patch('dnd.dice.secrets.randbelow', side_effect=[c1-1, c2-1]):
+    with mock.patch('dnd.dice.random.randint', side_effect=[c1, c2]):
         assert d6_pool(2, True) == (HIT_MAP[c1] + HIT_MAP[c2], status)
 
 
@@ -64,5 +64,5 @@ def test_d6_pool_two_dice(c1, c2, status):
     (1, 1, CriticalStatus.Fail),
 ])
 def test_d6_pool_four_dice(c1, c2, status):
-    with mock.patch('dnd.dice.secrets.randbelow', side_effect=[c1-1, c2-1, 4-1, 5-1]):
+    with mock.patch('dnd.dice.random.randint', side_effect=[c1, c2, 4, 5]):
         assert d6_pool(4, True) == (HIT_MAP[c1] + HIT_MAP[c2] + 1, status)

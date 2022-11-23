@@ -2,25 +2,14 @@ import logging
 import secrets
 from operator import itemgetter
 from typing import List
-from typing import Optional
 from typing import Tuple
 
 from dnd.char import Character
+from dnd.dice import CriticalStatus
 from dnd.dice import d20
 from dnd.dice import d6_pool
-from dnd.dice import roll_plus_mod
-from dnd.dice import CriticalStatus
 
 logger = logging.getLogger(__name__)
-
-
-def select_target_index(opponents: List[Character]) -> Optional[int]:
-    target = None
-    lowest_hp = 10000000
-    for i, c in enumerate(opponents):
-        if c.hp > 0 and c.hp < lowest_hp:
-            target = i
-    return target
 
 
 def compute_initiative(
@@ -67,28 +56,18 @@ def fight(team1: List[Character], team2: List[Character], attack) -> Tuple[int, 
     while True:
         rounds += 1
         for (_, c, team) in order:
-            opponents = team1 if team == 2 else team2
-            if all([c.hp <= 0 for c in opponents]):
-                return (rounds, team)
-            
-            target_ind = select_target_index(opponents)
-            if target_ind is not None:
-                target = opponents[target_ind]
+            if all([c.hp <= 0 for c in team1]):
+                return (rounds, 2)
+            if all([c.hp <= 0 for c in team2]):
+                return (rounds, 1)
+            allies, opponents = (team2, team1) if team == 2 else (team1, team2)
+
+            target = c.select_target(allies, opponents)
+            if target is not None:
+                hit, crit = attack(c, target)
+                target.hp -= c.compute_damage(hit, crit)
+                logger.info(f'{target.name} has {target.hp} hp remaining')
             else:
                 continue
-
-            hit, crit = attack(c, target)
-            dmg = 0
-            if crit == CriticalStatus.Fail:
-                logger.info('Critical failure!')
-            elif crit == CriticalStatus.Success:
-                logger.info('Critical hit!  Rolling double damage dice.')
-                dmg = roll_plus_mod(2 * c.dmg_numd, c.dmg_sized, c.dmg_mod)
-            elif hit:
-                logger.info(f'{c.name} hits and deals {dmg} points of damage!')
-                dmg = roll_plus_mod(c.dmg_numd, c.dmg_sized, c.dmg_mod)
-            target.hp -= dmg
-            logger.info(f'{target.name} has {target.hp} hp remaining')
-
 
         logger.info('-----')

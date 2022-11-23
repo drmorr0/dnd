@@ -2,15 +2,15 @@ import argparse
 import logging
 import sys
 
-from dnd.char import Character
+from dnd.char import read_characters
 from dnd.sims.ac import run_ac_sim
 
 NUM_TRIALS = 10000
 
 
 def main(args: argparse.Namespace) -> None:
-    team1 = [Character(args.team1)]
-    team2 = [Character(args.team2)]
+    team1 = read_characters(args.team1)
+    team2 = read_characters(args.team2)
 
     results = run_ac_sim(team1, team2, args.iterations, args.output_dir)
     print(results)

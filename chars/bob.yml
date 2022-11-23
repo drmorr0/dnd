@@ -1,8 +1,9 @@
-name: Bob
-initiative: 4
-attack:
+---
+- name: Bob
+  initiative: 4
+  attack:
     num: 1
     bonus: 6
     dmg: 1d6+4
-hp: 20
-ac: 13
+  hp: 20
+  ac: 13
