@@ -7,7 +7,6 @@ from bokeh.layouts import grid
 from bokeh.plotting import save
 
 from dnd.char import Character
-from dnd.char import State
 from dnd.combat import d20_attack
 from dnd.combat import fight
 from dnd.combat import pool_attack
@@ -40,10 +39,8 @@ def run_ac_sim(
                 rounds_accum = 0
                 win_count = {1: 0, 2: 0}
                 for _ in range(iterations):
-                    char1.hp = char1.max_hp
-                    char2.hp = char2.max_hp
-                    char1.state = State.Alive
-                    char2.state = State.Alive
+                    char1.reset()
+                    char2.reset()
                     rounds, winners = fight(team1, team2, attack_fn)
                     rounds_accum += rounds
                     win_count[winners] += 1

@@ -1,0 +1,10 @@
+---
+# You should comment out the 'stun' ability against this one
+- name: Thing 1 and Thing 2
+  initiative: -1
+  attack:
+    num: 2
+    bonus: 7
+    dmg: 2d8+5
+  hp: 130
+  ac: 12

@@ -31,7 +31,6 @@ class State(Enum):
 class Character:
     def __init__(self, obj: Dict[str, Any]) -> None:
         self.name = obj.get('name')
-        self.state = State.Alive
         self.init_mod = obj.get('initiative', 0)
         attack = obj.get('attack', {})
         self.num_attacks = attack.get('num')
@@ -39,11 +38,13 @@ class Character:
 
         self.dmg_numd, self.dmg_sized, self.dmg_mod = parse_dice(attack.get('dmg', ''))
         self.ac = obj.get('ac')
-        self.hp = obj.get('hp', 0)
-        self.max_hp = obj.get('hp')
+        self.max_hp = obj.get('hp', 0)
         self.special = obj.get('special')
         if self.special and self.special.get('dice'):
             self.spec_numd, self.spec_sized, self.spec_mod = parse_dice(attack.get('dmg', ''))
+
+        self.hp = self.max_hp
+        self.state = State.Alive
         self.stunned_target: Optional['Character'] = None
 
     def select_target(
@@ -89,6 +90,11 @@ class Character:
 
     def compute_special_damage(self) -> int:
         return roll_plus_mod(self.spec_numd, self.spec_sized, self.spec_mod)
+
+    def reset(self) -> None:
+        self.hp = self.max_hp
+        self.state = State.Alive
+        self.stunned_target = None
 
     def __str__(self) -> str:
         ab_str = f'+{self.attack_bonus}' if self.attack_bonus >= 0 else str(self.attack_bonus)

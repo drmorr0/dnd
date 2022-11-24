@@ -76,7 +76,7 @@ def fight(team1: List[Character], team2: List[Character], attack) -> Tuple[int, 
             if all([c.state == State.Dead for c in team2]):
                 return (rounds, 1)
 
-            if c.state == State.Stunned:
+            if c.state != State.Alive:
                 continue
 
             allies, opponents = (team2, team1) if team == 2 else (team1, team2)
@@ -87,14 +87,15 @@ def fight(team1: List[Character], team2: List[Character], attack) -> Tuple[int, 
 
             if target is not None:
                 if action == Action.Attack:
-                    hit, crit = attack(c, target)
-                    dmg = c.compute_damage(hit, crit)
-                    target.apply_dmg(dmg)
-                    if dmg > 0:
-                        logger.info(
-                            f'{c.name} hits and deals {dmg} points of damage to {target.name}!'
-                        )
-                        logger.info(f'{target.name} has {target.hp} hp remaining')
+                    for _ in range(c.num_attacks):
+                        hit, crit = attack(c, target)
+                        dmg = c.compute_damage(hit, crit)
+                        target.apply_dmg(dmg)
+                        if dmg > 0:
+                            logger.info(
+                                f'{c.name} hits and deals {dmg} points of damage to {target.name}!'
+                            )
+                            logger.info(f'{target.name} has {target.hp} hp remaining')
                 elif action == Action.Heal:
                     dmg = c.compute_special_damage()
                     healing = min(dmg, target.max_hp - target.hp)
