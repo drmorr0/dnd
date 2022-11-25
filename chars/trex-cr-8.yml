@@ -1,0 +1,9 @@
+---
+- name: Tyrannosaurus Dex
+  initiative: 0
+  attack:
+    num: 2
+    bonus: 10
+    dmg: 4d8+7
+  hp: 208
+  ac: 13

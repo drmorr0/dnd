@@ -1,0 +1,9 @@
+---
+- name: Iron Maiden
+  initiative: -1
+  attack:
+    num: 2
+    bonus: 13
+    dmg: 3d10+7
+  hp: 300
+  ac: 20

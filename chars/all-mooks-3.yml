@@ -1,0 +1,33 @@
+---
+- name: Half-Ochre
+  initiative: 0
+  attack:
+    num: 1
+    bonus: 5
+    dmg: 2d10+3
+  hp: 48
+  ac: 12
+- name: Half-Augur
+  initiative: 0
+  attack:
+    num: 1
+    bonus: 5
+    dmg: 2d10+3
+  hp: 48
+  ac: 12
+- name: Half-Ohhhh-Grrr
+  initiative: 0
+  attack:
+    num: 1
+    bonus: 5
+    dmg: 2d10+3
+  hp: 48
+  ac: 12
+- name: Half-Gogurt
+  initiative: 0
+  attack:
+    num: 1
+    bonus: 5
+    dmg: 2d10+3
+  hp: 48
+  ac: 12

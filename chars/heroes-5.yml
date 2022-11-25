@@ -1,0 +1,38 @@
+---
+- name: Tanky Tank
+  initiative: 0
+  attack:
+    num: 2
+    bonus: 7  # prof +3, attr +4
+    dmg: 1d8+4
+  hp: 46 # d10, +3 Con (roll 2d, take max)
+  ac: 21 # Plate Armor + Shield + 1
+- name: Glassy McCannon
+  initiative: 4
+  attack:
+    num: 1
+    bonus: 6  # prof +3, attr +4
+    dmg: 4d6+4
+  hp: 37 # d8, +2 Con (roll 2d, take max)
+  ac: 17 # +4 Dex, Studded leather + 1
+- name: Healbot
+  initiative: 1
+  attack:
+    num: 1
+    bonus: 5 # prof +3, attr +2
+    dmg: 1d10+2
+  special:
+    type: heal
+    dice: 3d8+4
+  hp: 37 # d8, +2 Con (roll 2d, take max)
+  ac: 18 # Breastplate, +1 Dex, Shield + 1
+- name: Mr. Nice Try
+  initiative: 2
+  attack:
+    num: 1
+    bonus: 6
+    dmg: 6d6
+  special:
+    type: stun
+  hp: 31 # d6, +2 Con (roll 2d, take max)
+  ac: 16 # +2 Dex, Mage Armor + 1

@@ -1,0 +1,25 @@
+---
+- name: Boblette
+  initiative: 0
+  attack:
+    num: 1
+    bonus: 7
+    dmg: 4d12+4
+  hp: 135
+  ac: 17
+- name: Rugbear
+  initiative: 2
+  attack:
+    num: 1
+    bonus: 4
+    dmg: 2d8+2
+  hp: 45
+  ac: 16
+- name: Bugrear
+  initiative: 2
+  attack:
+    num: 1
+    bonus: 4
+    dmg: 2d8+2
+  hp: 45
+  ac: 16

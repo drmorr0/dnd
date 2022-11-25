@@ -1,0 +1,9 @@
+---
+- name: I think I blue myself
+  initiative: 0
+  attack:
+    num: 4
+    bonus: 12
+    dmg: 2d10+7
+  hp: 324
+  ac: 19

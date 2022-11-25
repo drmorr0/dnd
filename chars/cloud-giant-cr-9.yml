@@ -1,0 +1,9 @@
+---
+- name: Hey, you! Get offa my cloud giant!
+  initiative: 0
+  attack:
+    num: 2
+    bonus: 12
+    dmg: 3d8+8
+  hp: 198
+  ac: 14

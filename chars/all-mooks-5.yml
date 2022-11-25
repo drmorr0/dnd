@@ -1,0 +1,41 @@
+---
+- name: Allosaurus
+  initiative: 1
+  attack:
+    num: 2
+    bonus: 6
+    dmg: 1d12+4
+  hp: 78
+  ac: 13
+- name: Smellosaurus
+  initiative: 1
+  attack:
+    num: 2
+    bonus: 6
+    dmg: 1d12+4
+  hp: 78
+  ac: 13
+- name: Allo, saurus
+  initiative: 1
+  attack:
+    num: 2
+    bonus: 6
+    dmg: 1d12+4
+  hp: 78
+  ac: 13
+- name: Yellowsaurus
+  initiative: 1
+  attack:
+    num: 2
+    bonus: 6
+    dmg: 1d12+4
+  hp: 78
+  ac: 13
+- name: Allow saw rus
+  initiative: 1
+  attack:
+    num: 2
+    bonus: 6
+    dmg: 1d12+4
+  hp: 78
+  ac: 13

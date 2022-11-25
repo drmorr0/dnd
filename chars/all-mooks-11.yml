@@ -1,0 +1,33 @@
+---
+- name: Boblette
+  initiative: 0
+  attack:
+    num: 1
+    bonus: 7
+    dmg: 4d12+4
+  hp: 135
+  ac: 17
+- name: Janelette
+  initiative: 0
+  attack:
+    num: 1
+    bonus: 7
+    dmg: 4d12+4
+  hp: 135
+  ac: 17
+- name: Dicklette
+  initiative: 0
+  attack:
+    num: 1
+    bonus: 7
+    dmg: 4d12+4
+  hp: 135
+  ac: 17
+- name: Harrylette
+  initiative: 0
+  attack:
+    num: 1
+    bonus: 7
+    dmg: 4d12+4
+  hp: 135
+  ac: 17
