@@ -37,7 +37,7 @@ class Character:
         self.attack_bonus = attack.get('bonus')
 
         self.dmg_numd, self.dmg_sized, self.dmg_mod = parse_dice(attack.get('dmg', ''))
-        self.ac = obj.get('ac')
+        self.ac = obj.get('ac', 10)
         self.max_hp = obj.get('hp', 0)
         self.special = obj.get('special')
         if self.special and self.special.get('dice'):
@@ -132,6 +132,7 @@ def select_least_hp_active_char(
             c.hp < lowest_hp and
             (c.hp != c.max_hp or include_full_health)
         ):
+            lowest_hp = c.hp
             target = c
     return target
 

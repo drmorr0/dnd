@@ -1,11 +1,18 @@
 import logging
 import random
 from enum import Enum
+from typing import Callable
 from typing import List
 from typing import Tuple
 
 logger = logging.getLogger(__name__)
 HIT_MAP = [0, 0, 0, 0, 0, 1, 2]
+
+
+class Advantage(Enum):
+    Disadvantage = -1
+    Empty = 0
+    Advantage = 1
 
 
 class CriticalStatus(Enum):
@@ -24,8 +31,8 @@ def roll_plus_mod(num: int, sides: int, mod: int) -> int:
     return sum(roll(num, sides)) + mod
 
 
-def roll_plus_mod_crit(num_dice: int, sides: int, mod: int) -> Tuple[int, CriticalStatus]:
-    nat_roll = max(roll(num_dice, sides))
+def roll_plus_mod_crit(num_dice: int, sides: int, mod: int, adv_fn: Callable) -> Tuple[int, CriticalStatus]:
+    nat_roll = adv_fn(roll(num_dice, sides))
     crit = (
         CriticalStatus.Success
         if (nat_roll == sides)
@@ -38,12 +45,24 @@ def roll_plus_mod_crit(num_dice: int, sides: int, mod: int) -> Tuple[int, Critic
     return nat_roll + mod, crit
 
 
-def d20(mod: int, can_crit: bool = False, advantage: bool = False) -> Tuple[int, CriticalStatus]:
-    num_dice = 2 if advantage else 1
+def d20(mod: int, can_crit: bool = False, advantage: Advantage = Advantage.Empty) -> Tuple[int, CriticalStatus]:
+    num_dice = 2 if advantage != Advantage.Empty else 1
+    adv_fn = min if advantage == Advantage.Disadvantage else max
     if can_crit:
-        return roll_plus_mod_crit(num_dice, 20, mod)
+        return roll_plus_mod_crit(num_dice, 20, mod, adv_fn)
     else:
         return roll_plus_mod(num_dice, 20, mod), CriticalStatus.Empty
+
+
+def _2d10(mod: int, can_crit: bool, advantage: int) -> Tuple[int, CriticalStatus]:
+    crit = CriticalStatus.Empty
+    d10s = roll(2, 10)
+    if d10s[0] == 1 and d10s[1] == 1:
+        crit = CriticalStatus.Fail
+    elif d10s[0] == d10s[1]:
+        crit = CriticalStatus.Success
+
+    return sum(d10s) + (advantage * 3) + mod, crit
 
 
 def d6_pool(num: int, can_crit: bool = False) -> Tuple[int, CriticalStatus]:

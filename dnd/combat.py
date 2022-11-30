@@ -1,17 +1,20 @@
 import logging
-import secrets
 from operator import itemgetter
+from random import random
 from typing import List
 from typing import Tuple
 
 from dnd.char import Action
 from dnd.char import Character
 from dnd.char import State
+from dnd.dice import Advantage
 from dnd.dice import CriticalStatus
 from dnd.dice import d20
 from dnd.dice import d6_pool
+from dnd.dice import _2d10
 
 logger = logging.getLogger(__name__)
+BASE_POOL_SIZE = 5
 
 
 def compute_initiative(
@@ -22,13 +25,13 @@ def compute_initiative(
     for c in team1:
         # append a small random value to use as a tiebreaker
         r, _ = d20(c.init_mod)
-        initiative = r + (secrets.randbelow(100) / 100)
+        initiative = r + random()
         order.append((initiative, c, 1))
 
     for c in team2:
         # append a small random value to use as a tiebreaker
         r, _ = d20(c.init_mod)
-        initiative = r + (secrets.randbelow(100) / 100)
+        initiative = r + random()
         order.append((initiative, c, 2))
 
     order.sort(key=itemgetter(0), reverse=True)
@@ -39,8 +42,36 @@ def compute_initiative(
     return order
 
 
-def d20_attack(c, target) -> Tuple[bool, CriticalStatus]:
-    advantage = (target.state == State.Stunned)
+def get_advantages(team: int) -> int:
+    v = random()
+    if team == 1:
+        if v < 0.05:
+            return -1
+        elif v < 0.15:
+            return 0
+        elif v < 0.4:
+            return 1
+        elif v < 0.9:
+            return 2
+        else:
+            return 3
+    if team == 2:
+        if v < 0.25:
+            return -1
+        elif v < 0.75:
+            return 0
+        else:
+            return 1
+    return 0
+
+
+def d20_attack(c: Character, target: Character, adv: int) -> Tuple[bool, CriticalStatus]:
+    advantage = Advantage.Empty
+    if ((target.state == State.Stunned) and (adv >= 0)) or (adv > 0):
+        advantage = Advantage.Advantage
+    elif adv < 0:
+        advantage = Advantage.Disadvantage
+
     attack_roll, crit = d20(c.attack_bonus, can_crit=True, advantage=advantage)
     if advantage:
         logger.info(
@@ -53,9 +84,22 @@ def d20_attack(c, target) -> Tuple[bool, CriticalStatus]:
     return (attack_roll >= target.ac, crit)
 
 
-def pool_attack(c, target) -> Tuple[bool, CriticalStatus]:
-    base = 6 if target.state == State.Stunned else 5
-    pool_size = base + c.attack_bonus
+def _2d10_attack(c: Character, target: Character, adv: int) -> Tuple[bool, CriticalStatus]:
+    if target.state == State.Stunned:
+        adv += 1
+    adv = max(min(adv, 3), -3)
+    attack_roll, crit = _2d10(c.attack_bonus, can_crit=True, advantage=adv)
+    logger.info(
+        f'{c.name} attacks {target.name}: {attack_roll} versus {target.ac} AC'
+    )
+    return (attack_roll >= target.ac, crit)
+
+
+def pool_attack(c: Character, target: Character, adv: int) -> Tuple[bool, CriticalStatus]:
+    if target.state == State.Stunned:
+        adv += 1
+    adv = max(min(adv, 3), -3)
+    pool_size = BASE_POOL_SIZE + c.attack_bonus + adv
     attack_roll, crit = d6_pool(pool_size, can_crit=True)
     modified_ac = target.ac - 10
     logger.info(
@@ -88,7 +132,9 @@ def fight(team1: List[Character], team2: List[Character], attack) -> Tuple[int, 
             if target is not None:
                 if action == Action.Attack:
                     for _ in range(c.num_attacks):
-                        hit, crit = attack(c, target)
+                        adv = get_advantages(team)
+                        # adv = 0
+                        hit, crit = attack(c, target, adv)
                         dmg = c.compute_damage(hit, crit)
                         target.apply_dmg(dmg)
                         if dmg > 0:

@@ -5,7 +5,7 @@
     num: 1
     bonus: 6  # prof +2, attr +4
     dmg: 1d8+4
-  hp: 13 # d10, +3 Con (roll 2d, take max)
+  hp: 18 # d10, +3 Con (roll 2d, take max)
   ac: 20 # Plate Armor + Shield
 - name: Glassy McCannon
   initiative: 4
@@ -13,7 +13,7 @@
     num: 1
     bonus: 6  # prof +2, attr +4
     dmg: 3d6+4
-  hp: 10 # d8, +2 Con (roll 2d, take max)
+  hp: 14 # d8, +2 Con (roll 2d, take max)
   ac: 16 # +4 Dex, Studded leather
 - name: Healbot
   initiative: 1
@@ -24,7 +24,7 @@
   special:
     type: heal
     dice: 1d8+4
-  hp: 10 # d8, +2 Con (roll 2d, take max)
+  hp: 14 # d8, +2 Con (roll 2d, take max)
   ac: 17 # Breastplate, +1 Dex, Shield
 - name: Mr. Nice Try
   initiative: 2
@@ -34,5 +34,5 @@
     dmg: 4d6
   special:
     type: stun
-  hp: 6 # d6, +2 Con (roll 2d, take max)
+  hp: 11 # d6, +2 Con (roll 2d, take max)
   ac: 15 # +2 Dex, Mage Armor

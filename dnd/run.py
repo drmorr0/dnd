@@ -7,6 +7,7 @@ from dnd.sims import run_ac_sim
 from dnd.sims import run_comparison
 from dnd.sims import run_single_d20
 from dnd.sims import run_single_pool
+from dnd.sims import run_single_2d10
 
 NUM_TRIALS = 10000
 
@@ -24,6 +25,8 @@ def main(args: argparse.Namespace) -> None:
         run_single_d20(team1, team2)
     if args.sim == 'single-pool':
         run_single_pool(team1, team2)
+    if args.sim == 'single-2d10':
+        run_single_2d10(team1, team2)
 
 
 def parse_args(description: str) -> argparse.Namespace:
@@ -48,7 +51,7 @@ def parse_args(description: str) -> argparse.Namespace:
     parser.add_argument(
         '--sim',
         default='single-d20',
-        choices=['ac', 'comparison', 'single-d20', 'single-pool'],
+        choices=['ac', 'comparison', 'single-d20', 'single-pool', 'single-2d10'],
     )
     parser.add_argument('team1')
     parser.add_argument('team2')

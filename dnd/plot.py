@@ -4,7 +4,7 @@ from typing import Tuple
 from bokeh.plotting import figure
 
 
-def plot_ac(ac_list: List, d20_pts: List, pool_pts: List, title: str, y_range: Tuple[int, int]) -> figure:
+def plot_ac(ac_list: List, d20_pts: List, pool_pts: List, _2d10_pts, title: str, y_range: Tuple[int, int]) -> figure:
     plot = figure(
         title=title,
         toolbar_location=None,
@@ -18,4 +18,5 @@ def plot_ac(ac_list: List, d20_pts: List, pool_pts: List, title: str, y_range: T
     plot.xaxis.axis_label = "Opponent AC"
     plot.line(ac_list, d20_pts, color='red')
     plot.line(ac_list, pool_pts, color='navy')
+    plot.line(ac_list, _2d10_pts, color='green')
     return plot
